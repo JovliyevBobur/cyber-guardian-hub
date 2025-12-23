@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 const Navbar = () => {
   const { t } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -72,11 +73,11 @@ const Navbar = () => {
             <LanguageSwitcher />
             <ThemeToggle />
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="gap-2">
+              <Button variant="ghost" size="sm" className="gap-2" onClick={() => navigate('/auth')}>
                 <LogIn className="w-4 h-4" />
                 {t.nav.login}
               </Button>
-              <Button variant="cyber" size="sm" className="gap-2">
+              <Button variant="cyber" size="sm" className="gap-2" onClick={() => navigate('/auth?mode=register')}>
                 <UserPlus className="w-4 h-4" />
                 {t.nav.register}
               </Button>
@@ -118,11 +119,11 @@ const Navbar = () => {
               <ThemeToggle />
             </div>
             <div className="flex flex-col gap-2">
-              <Button variant="ghost" className="justify-start gap-2">
+              <Button variant="ghost" className="justify-start gap-2" onClick={() => { setIsOpen(false); navigate('/auth'); }}>
                 <LogIn className="w-4 h-4" />
                 {t.nav.login}
               </Button>
-              <Button variant="cyber" className="justify-start gap-2">
+              <Button variant="cyber" className="justify-start gap-2" onClick={() => { setIsOpen(false); navigate('/auth?mode=register'); }}>
                 <UserPlus className="w-4 h-4" />
                 {t.nav.register}
               </Button>

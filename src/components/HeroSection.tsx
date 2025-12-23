@@ -1,10 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Shield, Lock, Eye, ArrowRight } from 'lucide-react';
 
 const HeroSection = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -84,11 +86,11 @@ const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <Button variant="cyber" size="xl" className="group">
+            <Button variant="cyber" size="xl" className="group" onClick={() => navigate('/education')}>
               {t.hero.cta}
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button variant="cyberOutline" size="xl">
+            <Button variant="cyberOutline" size="xl" onClick={() => navigate('/auth')}>
               {t.hero.ctaSecondary}
             </Button>
           </div>
