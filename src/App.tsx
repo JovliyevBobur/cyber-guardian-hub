@@ -11,6 +11,8 @@ import About from "./pages/About";
 import Education from "./pages/Education";
 import Games from "./pages/Games";
 import Contact from "./pages/Contact";
+import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
                 <Route path="/education" element={<Education />} />
                 <Route path="/games" element={<Games />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/admin/*" element={<Admin />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
