@@ -39,7 +39,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <div className="relative">
-              <img src="/placeholder.svg" alt="CyberSafe Edu logo" className="w-8 h-8 object-contain transition-all duration-300 group-hover:scale-110" />
+              <img src="/logo.svg" alt="CyberSafe Edu logo" className="w-8 h-8 object-contain transition-all duration-300 group-hover:scale-110" />
               <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <span className="font-display font-bold text-lg md:text-xl text-foreground">

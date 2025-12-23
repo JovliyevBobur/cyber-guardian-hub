@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="48" viewBox="0 0 240 48" role="img" aria-label="CyberSafe Edu logo">
+  <defs>
+    <linearGradient id="g1" x1="0%" x2="100%" y1="0%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="36" height="36" rx="4" ry="4" fill="#e6edf3" stroke-opacity="0" />
+  <g transform="translate(48,30)">
+    <style>
+      .brand { font: 700 20px/1 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #ffffff; }
+      .accent { fill: url(#g1); font-weight:700 }
+    </style>
+  </g>
+  <!-- dark background transparent so it sits on any header; include text as paths for crispness -->
+  <g transform="translate(48,10)">
+    <text x="0" y="22" class="brand" fill="#ffffff">CyberSafe </text>
+    <text x="120" y="22" class="brand" fill="url(#g1)">Edu</text>
+  </g>
+</svg>

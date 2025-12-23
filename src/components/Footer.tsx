@@ -20,7 +20,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <img src="/placeholder.svg" alt="CyberSafe Edu logo" className="w-8 h-8 object-contain" />
+              <img src="/logo.svg" alt="CyberSafe Edu logo" className="w-8 h-8 object-contain" />
               <span className="font-display font-bold text-xl text-foreground">
                 CyberSafe <span className="text-primary">Edu</span>
               </span>
