@@ -13,7 +13,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>CyberSec - Kiber Xavfsizlik Platformasi</title>
+        <title>CyberSafe Edu - Kiber Xavfsizlik Platformasi</title>
         <meta name="description" content="Zamonaviy kiber tahdidlardan himoyalanish, internet xavfsizligi va ma'lumotlaringizni saqlash bo'yicha bilimlarni egallang." />
       </Helmet>
       

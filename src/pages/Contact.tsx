@@ -66,7 +66,7 @@ const Contact = () => {
   return (
     <>
       <Helmet>
-        <title>Aloqa - CyberSec</title>
+        <title>Aloqa - CyberSafe Edu</title>
         <meta name="description" content="Biz bilan bog'laning. Savollaringizga javob beramiz." />
       </Helmet>
       

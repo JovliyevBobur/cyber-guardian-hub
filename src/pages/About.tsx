@@ -29,8 +29,8 @@ const About = () => {
   return (
     <>
       <Helmet>
-        <title>Biz haqimizda - CyberSec</title>
-        <meta name="description" content="CyberSec platformasi haqida ma'lumot. Bizning missiyamiz va maqsadlarimiz." />
+        <title>Biz haqimizda - CyberSafe Edu</title>
+        <meta name="description" content="CyberSafe Edu platformasi haqida ma'lumot. Bizning missiyamiz va maqsadlarimiz." />
       </Helmet>
       
       <div className="min-h-screen bg-background">

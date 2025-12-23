@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Shield, Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -20,9 +20,9 @@ const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <Shield className="w-8 h-8 text-primary" />
+              <img src="/placeholder.svg" alt="CyberSafe Edu logo" className="w-8 h-8 object-contain" />
               <span className="font-display font-bold text-xl text-foreground">
-                CYBER<span className="text-primary">SEC</span>
+                CyberSafe <span className="text-primary">Edu</span>
               </span>
             </Link>
             <p className="text-muted-foreground text-sm max-w-md mb-6">
@@ -82,7 +82,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 CyberSec. {t.footer.rights}
+            © 2024 CyberSafe Edu. {t.footer.rights}
           </p>
           <div className="flex items-center gap-6">
             <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">

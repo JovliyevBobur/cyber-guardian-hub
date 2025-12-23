@@ -59,7 +59,7 @@ const HeroSection = () => {
         <div className="max-w-4xl mx-auto">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-8 animate-fade-in">
-            <Shield className="w-4 h-4 text-primary" />
+            <img src="/placeholder.svg" alt="CyberSafe Edu logo" className="w-4 h-4 object-contain" />
             <span className="text-sm font-medium text-muted-foreground">
               Kiber Xavfsizlik Platformasi
             </span>

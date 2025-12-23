@@ -50,7 +50,7 @@ const Games = () => {
   return (
     <>
       <Helmet>
-        <title>O'yinlar - CyberSec</title>
+        <title>O'yinlar - CyberSafe Edu</title>
         <meta name="description" content="Kiber xavfsizlikni o'yin orqali o'rganing. Phishing, parol xavfsizligi va boshqa mavzular." />
       </Helmet>
       

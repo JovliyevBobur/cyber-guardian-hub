@@ -126,7 +126,7 @@ const Education = () => {
   return (
     <>
       <Helmet>
-        <title>O'quv bo'limi - CyberSec</title>
+        <title>O'quv bo'limi - CyberSafe Edu</title>
         <meta name="description" content="Kiber xavfsizlik bo'yicha maqolalar, video darslar va testlar." />
       </Helmet>
       

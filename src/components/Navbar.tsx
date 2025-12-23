@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
-import { Menu, X, Shield, LogIn, UserPlus } from 'lucide-react';
+import { Menu, X, LogIn, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
@@ -39,11 +39,11 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <div className="relative">
-              <Shield className="w-8 h-8 text-primary transition-all duration-300 group-hover:scale-110" />
+              <img src="/placeholder.svg" alt="CyberSafe Edu logo" className="w-8 h-8 object-contain transition-all duration-300 group-hover:scale-110" />
               <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <span className="font-display font-bold text-lg md:text-xl text-foreground">
-              CYBER<span className="text-primary">SEC</span>
+              CyberSafe <span className="text-primary">Edu</span>
             </span>
           </Link>
 
