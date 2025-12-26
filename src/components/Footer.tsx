@@ -72,9 +72,9 @@ const Footer = () => {
               Aloqa
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>info@cybersec.uz</li>
-              <li>+998 90 123 45 67</li>
-              <li>Toshkent, O'zbekiston</li>
+              <li>jbobur005@gmail.com</li>
+              <li>+998 93 005 42 87</li>
+              <li>Xorazm, O'zbekiston</li>
             </ul>
           </div>
         </div>
@@ -82,7 +82,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 CyberSafe Edu. {t.footer.rights}
+            © 2026 CyberSafe Edu. {t.footer.rights}
           </p>
           <div className="flex items-center gap-6">
             <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
