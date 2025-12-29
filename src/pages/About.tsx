@@ -1,30 +1,39 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Target, Eye, Users, Award, Shield, Zap } from 'lucide-react';
+import { Target, Eye, Users, Award, Shield, Zap, LucideIcon } from 'lucide-react';
 
-const About = () => {
+interface Value {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+const About: React.FC = () => {
   const { t } = useLanguage();
 
-  const values = [
-    {
-      icon: Shield,
-      title: 'Xavfsizlik',
-      description: 'Foydalanuvchilarimiz xavfsizligi bizning asosiy ustuvorligimiz.',
-    },
-    {
-      icon: Users,
-      title: 'Hamkorlik',
-      description: 'Jamoa bo\'lib ishlash va bilim almashish.',
-    },
-    {
-      icon: Zap,
-      title: 'Innovatsiya',
-      description: 'Eng so\'nggi texnologiyalar va usullarni qo\'llash.',
-    },
-  ];
+  const values: Value[] = useMemo(
+    () => [
+      {
+        icon: Shield,
+        title: 'Xavfsizlik',
+        description: 'Foydalanuvchilarimiz xavfsizligi bizning asosiy ustuvorligimiz.',
+      },
+      {
+        icon: Users,
+        title: 'Hamkorlik',
+        description: 'Jamoa bo\'lib ishlash va bilim almashish.',
+      },
+      {
+        icon: Zap,
+        title: 'Innovatsiya',
+        description: 'Eng so\'nggi texnologiyalar va usullarni qo\'llash.',
+      },
+    ],
+    []
+  );
 
   return (
     <>
@@ -38,10 +47,10 @@ const About = () => {
         
         <main className="pt-24">
           {/* Hero */}
-          <section className="py-20">
+          <section className="py-20" aria-labelledby="about-heading">
             <div className="container px-4 mx-auto">
               <div className="max-w-3xl mx-auto text-center">
-                <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">
+                <h1 id="about-heading" className="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">
                   {t.about.title}
                 </h1>
                 <p className="text-lg text-muted-foreground">
@@ -52,26 +61,26 @@ const About = () => {
           </section>
 
           {/* Mission & Vision */}
-          <section className="py-20 bg-secondary/30">
+          <section className="py-20 bg-secondary/30" aria-labelledby="mission-vision-heading">
             <div className="container px-4 mx-auto">
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Mission */}
-                <div className="p-8 rounded-2xl glass-card">
+                <article className="p-8 rounded-2xl glass-card">
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6">
-                    <Target className="w-7 h-7 text-primary-foreground" />
+                    <Target className="w-7 h-7 text-primary-foreground" aria-hidden="true" />
                   </div>
-                  <h2 className="font-display text-2xl font-bold text-foreground mb-4">
+                  <h2 id="mission-vision-heading" className="font-display text-2xl font-bold text-foreground mb-4">
                     {t.about.mission}
                   </h2>
                   <p className="text-muted-foreground">
                     {t.about.missionText}
                   </p>
-                </div>
+                </article>
 
                 {/* Vision */}
-                <div className="p-8 rounded-2xl glass-card">
+                <article className="p-8 rounded-2xl glass-card">
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-6">
-                    <Eye className="w-7 h-7 text-primary-foreground" />
+                    <Eye className="w-7 h-7 text-primary-foreground" aria-hidden="true" />
                   </div>
                   <h2 className="font-display text-2xl font-bold text-foreground mb-4">
                     {t.about.vision}
@@ -79,46 +88,49 @@ const About = () => {
                   <p className="text-muted-foreground">
                     {t.about.visionText}
                   </p>
-                </div>
+                </article>
               </div>
             </div>
           </section>
 
           {/* Values */}
-          <section className="py-20">
+          <section className="py-20" aria-labelledby="values-heading">
             <div className="container px-4 mx-auto">
-              <h2 className="font-display text-3xl font-bold text-foreground text-center mb-12">
+              <h2 id="values-heading" className="font-display text-3xl font-bold text-foreground text-center mb-12">
                 Bizning qadriyatlarimiz
               </h2>
               <div className="grid md:grid-cols-3 gap-8">
-                {values.map((value, index) => (
-                  <div
-                    key={index}
-                    className="text-center p-8 rounded-2xl glass-card group hover:scale-105 transition-transform duration-300"
-                  >
-                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
-                      <value.icon className="w-8 h-8 text-primary transition-colors group-hover:text-primary-foreground" />
-                    </div>
-                    <h3 className="font-display text-xl font-semibold text-foreground mb-3">
-                      {value.title}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {value.description}
-                    </p>
-                  </div>
-                ))}
+                {values.map((value, index) => {
+                  const IconComponent = value.icon;
+                  return (
+                    <article
+                      key={index}
+                      className="text-center p-8 rounded-2xl glass-card group hover:scale-105 transition-transform duration-300"
+                    >
+                      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
+                        <IconComponent className="w-8 h-8 text-primary transition-colors group-hover:text-primary-foreground" aria-hidden="true" />
+                      </div>
+                      <h3 className="font-display text-xl font-semibold text-foreground mb-3">
+                        {value.title}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {value.description}
+                      </p>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           </section>
 
           {/* Team */}
-          <section className="py-20 bg-secondary/30">
+          <section className="py-20 bg-secondary/30" aria-labelledby="team-heading">
             <div className="container px-4 mx-auto">
               <div className="max-w-3xl mx-auto text-center">
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6">
-                  <Award className="w-10 h-10 text-primary-foreground" />
+                  <Award className="w-10 h-10 text-primary-foreground" aria-hidden="true" />
                 </div>
-                <h2 className="font-display text-3xl font-bold text-foreground mb-6">
+                <h2 id="team-heading" className="font-display text-3xl font-bold text-foreground mb-6">
                   Professional jamoa
                 </h2>
                 <p className="text-muted-foreground mb-8">

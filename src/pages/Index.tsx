@@ -6,15 +6,16 @@ import FeaturesSection from '@/components/FeaturesSection';
 import StatsSection from '@/components/StatsSection';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { APP_NAME, APP_DESCRIPTION } from '@/constants';
 
-const Index = () => {
+const Index: React.FC = () => {
   const { t } = useLanguage();
 
   return (
     <>
       <Helmet>
-        <title>CyberSafe Edu - Kiber Xavfsizlik Platformasi</title>
-        <meta name="description" content="Zamonaviy kiber tahdidlardan himoyalanish, internet xavfsizligi va ma'lumotlaringizni saqlash bo'yicha bilimlarni egallang." />
+        <title>{APP_NAME} - {APP_DESCRIPTION}</title>
+        <meta name="description" content={t.hero.description} />
       </Helmet>
       
       <div className="min-h-screen bg-background">

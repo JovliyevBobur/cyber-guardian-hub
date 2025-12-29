@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -11,45 +11,78 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, Shield } from 'lucide-react';
+import { validateEmail, validatePassword, validateName } from '@/utils/validators';
 
-const Auth = () => {
+type AuthMode = 'login' | 'register';
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
+interface RegisterFormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+const Auth: React.FC = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [mode, setMode] = useState<AuthMode>('login');
 
   // Login form state
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
+  const [loginForm, setLoginForm] = useState<LoginFormData>({
+    email: '',
+    password: '',
+  });
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // Register form state
-  const [registerName, setRegisterName] = useState('');
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [registerForm, setRegisterForm] = useState<RegisterFormData>({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     const modeParam = searchParams.get('mode');
-    if (modeParam === 'register') {
-      setMode('register');
-    } else {
-      setMode('login');
-    }
+    setMode(modeParam === 'register' ? 'register' : 'login');
   }, [searchParams]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLoginChange = useCallback((field: keyof LoginFormData, value: string) => {
+    setLoginForm((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleRegisterChange = useCallback((field: keyof RegisterFormData, value: string) => {
+    setRegisterForm((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleLogin = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateEmail(loginForm.email)) {
+      toast({
+        title: 'Xatolik',
+        description: 'To\'g\'ri email manzil kiriting.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
+        email: loginForm.email.trim(),
+        password: loginForm.password,
       });
 
       if (error) throw error;
@@ -59,22 +92,59 @@ const Auth = () => {
         description: 'Tizimga kirdingiz.',
       });
       navigate('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Tizimga kirishda xatolik yuz berdi.';
       toast({
         title: 'Xatolik',
-        description: error.message || 'Tizimga kirishda xatolik yuz berdi.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [loginForm, toast, navigate]);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (registerPassword !== confirmPassword) {
+    // Validate name
+    const nameValidation = validateName(registerForm.name);
+    if (!nameValidation.valid) {
+      toast({
+        title: 'Xatolik',
+        description: nameValidation.message,
+        variant: 'destructive',
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate email
+    if (!validateEmail(registerForm.email)) {
+      toast({
+        title: 'Xatolik',
+        description: 'To\'g\'ri email manzil kiriting.',
+        variant: 'destructive',
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password
+    const passwordValidation = validatePassword(registerForm.password);
+    if (!passwordValidation.valid) {
+      toast({
+        title: 'Xatolik',
+        description: passwordValidation.message,
+        variant: 'destructive',
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    // Check password match
+    if (registerForm.password !== registerForm.confirmPassword) {
       toast({
         title: 'Xatolik',
         description: 'Parollar mos kelmaydi.',
@@ -84,24 +154,14 @@ const Auth = () => {
       return;
     }
 
-    if (registerPassword.length < 6) {
-      toast({
-        title: 'Xatolik',
-        description: 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak.',
-        variant: 'destructive',
-      });
-      setIsLoading(false);
-      return;
-    }
-
     try {
       // Create user account
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: registerEmail,
-        password: registerPassword,
+        email: registerForm.email.trim(),
+        password: registerForm.password,
         options: {
           data: {
-            full_name: registerName,
+            full_name: registerForm.name.trim(),
           },
         },
       });
@@ -114,7 +174,7 @@ const Auth = () => {
           .from('profiles')
           .insert({
             user_id: authData.user.id,
-            full_name: registerName,
+            full_name: registerForm.name.trim(),
             avatar_url: null,
           });
 
@@ -129,21 +189,28 @@ const Auth = () => {
         description: 'Ro\'yxatdan o\'tdingiz. Emailingizni tekshiring.',
       });
       setMode('login');
-      // Clear form
-      setRegisterName('');
-      setRegisterEmail('');
-      setRegisterPassword('');
-      setConfirmPassword('');
-    } catch (error: any) {
+      setRegisterForm({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Ro\'yxatdan o\'tishda xatolik yuz berdi.';
       toast({
         title: 'Xatolik',
-        description: error.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [registerForm, toast]);
+
+  const switchMode = useCallback((newMode: AuthMode) => {
+    setMode(newMode);
+    navigate(newMode === 'register' ? '/auth?mode=register' : '/auth');
+  }, [navigate]);
 
   return (
     <>
@@ -154,15 +221,18 @@ const Auth = () => {
 
       <div className="min-h-screen bg-background relative overflow-hidden">
         {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-secondary/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-secondary/20" aria-hidden="true" />
         
         {/* Grid Pattern */}
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px),
-                             linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px',
-          }} />
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" aria-hidden="true">
+          <div 
+            className="absolute inset-0" 
+            style={{
+              backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px),
+                               linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
+              backgroundSize: '50px 50px',
+            }} 
+          />
         </div>
 
         <Navbar />
@@ -173,8 +243,9 @@ const Auth = () => {
             <Link 
               to="/" 
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6"
+              aria-label="Bosh sahifaga qaytish"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
               <span>Bosh sahifa</span>
             </Link>
 
@@ -184,9 +255,9 @@ const Auth = () => {
                 <div className="flex justify-center mb-4">
                   <div className="relative">
                     <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Shield className="w-10 h-10 text-primary" />
+                      <Shield className="w-10 h-10 text-primary" aria-hidden="true" />
                     </div>
-                    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
+                    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" aria-hidden="true" />
                   </div>
                 </div>
 
@@ -202,19 +273,21 @@ const Auth = () => {
 
               <CardContent>
                 {mode === 'login' ? (
-                  <form onSubmit={handleLogin} className="space-y-4">
+                  <form onSubmit={handleLogin} className="space-y-4" noValidate>
                     <div className="space-y-2">
                       <Label htmlFor="login-email">Email</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
                         <Input
                           id="login-email"
                           type="email"
                           placeholder="ababab@gmail.com"
-                          value={loginEmail}
-                          onChange={(e) => setLoginEmail(e.target.value)}
+                          value={loginForm.email}
+                          onChange={(e) => handleLoginChange('email', e.target.value)}
                           className="pl-10 h-12"
                           required
+                          autoComplete="email"
+                          disabled={isLoading}
                         />
                       </div>
                     </div>
@@ -222,25 +295,29 @@ const Auth = () => {
                     <div className="space-y-2">
                       <Label htmlFor="login-password">Parol</Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
                         <Input
                           id="login-password"
                           type={showLoginPassword ? 'text' : 'password'}
                           placeholder="••••••••"
-                          value={loginPassword}
-                          onChange={(e) => setLoginPassword(e.target.value)}
+                          value={loginForm.password}
+                          onChange={(e) => handleLoginChange('password', e.target.value)}
                           className="pl-10 pr-10 h-12"
                           required
+                          autoComplete="current-password"
+                          disabled={isLoading}
                         />
                         <button
                           type="button"
                           onClick={() => setShowLoginPassword(!showLoginPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          aria-label={showLoginPassword ? 'Parolni yashirish' : 'Parolni ko\'rsatish'}
+                          disabled={isLoading}
                         >
                           {showLoginPassword ? (
-                            <EyeOff className="w-5 h-5" />
+                            <EyeOff className="w-5 h-5" aria-hidden="true" />
                           ) : (
-                            <Eye className="w-5 h-5" />
+                            <Eye className="w-5 h-5" aria-hidden="true" />
                           )}
                         </button>
                       </div>
@@ -259,30 +336,30 @@ const Auth = () => {
                       <span>Hisobingiz yo'qmi? </span>
                       <button
                         type="button"
-                        onClick={() => {
-                          setMode('register');
-                          navigate('/auth?mode=register');
-                        }}
+                        onClick={() => switchMode('register')}
                         className="text-primary hover:underline font-medium"
+                        disabled={isLoading}
                       >
                         Ro'yxatdan o'tish
                       </button>
                     </div>
                   </form>
                 ) : (
-                  <form onSubmit={handleRegister} className="space-y-4">
+                  <form onSubmit={handleRegister} className="space-y-4" noValidate>
                     <div className="space-y-2">
                       <Label htmlFor="register-name">To'liq ism</Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
                         <Input
                           id="register-name"
                           type="text"
                           placeholder="Abababa"
-                          value={registerName}
-                          onChange={(e) => setRegisterName(e.target.value)}
+                          value={registerForm.name}
+                          onChange={(e) => handleRegisterChange('name', e.target.value)}
                           className="pl-10 h-12"
                           required
+                          autoComplete="name"
+                          disabled={isLoading}
                         />
                       </div>
                     </div>
@@ -290,15 +367,17 @@ const Auth = () => {
                     <div className="space-y-2">
                       <Label htmlFor="register-email">Email</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
                         <Input
                           id="register-email"
                           type="email"
                           placeholder="abababab@gmail.com"
-                          value={registerEmail}
-                          onChange={(e) => setRegisterEmail(e.target.value)}
+                          value={registerForm.email}
+                          onChange={(e) => handleRegisterChange('email', e.target.value)}
                           className="pl-10 h-12"
                           required
+                          autoComplete="email"
+                          disabled={isLoading}
                         />
                       </div>
                     </div>
@@ -306,26 +385,30 @@ const Auth = () => {
                     <div className="space-y-2">
                       <Label htmlFor="register-password">Parol</Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
                         <Input
                           id="register-password"
                           type={showRegisterPassword ? 'text' : 'password'}
                           placeholder="••••••••"
-                          value={registerPassword}
-                          onChange={(e) => setRegisterPassword(e.target.value)}
+                          value={registerForm.password}
+                          onChange={(e) => handleRegisterChange('password', e.target.value)}
                           className="pl-10 pr-10 h-12"
                           minLength={6}
                           required
+                          autoComplete="new-password"
+                          disabled={isLoading}
                         />
                         <button
                           type="button"
                           onClick={() => setShowRegisterPassword(!showRegisterPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          aria-label={showRegisterPassword ? 'Parolni yashirish' : 'Parolni ko\'rsatish'}
+                          disabled={isLoading}
                         >
                           {showRegisterPassword ? (
-                            <EyeOff className="w-5 h-5" />
+                            <EyeOff className="w-5 h-5" aria-hidden="true" />
                           ) : (
-                            <Eye className="w-5 h-5" />
+                            <Eye className="w-5 h-5" aria-hidden="true" />
                           )}
                         </button>
                       </div>
@@ -334,26 +417,30 @@ const Auth = () => {
                     <div className="space-y-2">
                       <Label htmlFor="confirm-password">Parolni tasdiqlang</Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
                         <Input
                           id="confirm-password"
                           type={showConfirmPassword ? 'text' : 'password'}
                           placeholder="••••••••"
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          value={registerForm.confirmPassword}
+                          onChange={(e) => handleRegisterChange('confirmPassword', e.target.value)}
                           className="pl-10 pr-10 h-12"
                           minLength={6}
                           required
+                          autoComplete="new-password"
+                          disabled={isLoading}
                         />
                         <button
                           type="button"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          aria-label={showConfirmPassword ? 'Parolni yashirish' : 'Parolni ko\'rsatish'}
+                          disabled={isLoading}
                         >
                           {showConfirmPassword ? (
-                            <EyeOff className="w-5 h-5" />
+                            <EyeOff className="w-5 h-5" aria-hidden="true" />
                           ) : (
-                            <Eye className="w-5 h-5" />
+                            <Eye className="w-5 h-5" aria-hidden="true" />
                           )}
                         </button>
                       </div>
@@ -372,11 +459,9 @@ const Auth = () => {
                       <span>Allaqachon hisobingiz bormi? </span>
                       <button
                         type="button"
-                        onClick={() => {
-                          setMode('login');
-                          navigate('/auth');
-                        }}
+                        onClick={() => switchMode('login')}
                         className="text-primary hover:underline font-medium"
+                        disabled={isLoading}
                       >
                         Kirish
                       </button>

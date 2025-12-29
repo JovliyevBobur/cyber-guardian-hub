@@ -1,51 +1,86 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Gamepad2, Fish, Key, Link2, Trophy, Users, Star } from 'lucide-react';
+import { Gamepad2, Fish, Key, Link2, Trophy, Users, Star, LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { formatNumber } from '@/utils/formatters';
+import type { Game } from '@/types';
 
-const Games = () => {
+interface GameItem extends Omit<Game, 'icon'> {
+  icon: LucideIcon;
+  gradient: string;
+}
+
+interface LeaderboardEntry {
+  name: string;
+  score: number;
+  avatar: string;
+}
+
+const Games: React.FC = () => {
   const { t } = useLanguage();
 
-  const games = [
-    {
-      icon: Fish,
-      title: t.games.phishing.title,
-      description: t.games.phishing.description,
-      difficulty: 'Oson',
-      players: 2340,
-      rating: 4.8,
-      gradient: 'from-blue-500 to-cyan-500',
-    },
-    {
-      icon: Key,
-      title: t.games.password.title,
-      description: t.games.password.description,
-      difficulty: 'O\'rta',
-      players: 1890,
-      rating: 4.9,
-      gradient: 'from-purple-500 to-pink-500',
-    },
-    {
-      icon: Link2,
-      title: t.games.links.title,
-      description: t.games.links.description,
-      difficulty: 'Qiyin',
-      players: 1250,
-      rating: 4.7,
-      gradient: 'from-orange-500 to-red-500',
-    },
-  ];
+  const games: GameItem[] = useMemo(
+    () => [
+      {
+        id: '1',
+        title: t.games.phishing.title,
+        description: t.games.phishing.description,
+        difficulty: 'easy',
+        players: 2340,
+        rating: 4.8,
+        icon: Fish,
+        gradient: 'from-blue-500 to-cyan-500',
+      },
+      {
+        id: '2',
+        title: t.games.password.title,
+        description: t.games.password.description,
+        difficulty: 'medium',
+        players: 1890,
+        rating: 4.9,
+        icon: Key,
+        gradient: 'from-purple-500 to-pink-500',
+      },
+      {
+        id: '3',
+        title: t.games.links.title,
+        description: t.games.links.description,
+        difficulty: 'hard',
+        players: 1250,
+        rating: 4.7,
+        icon: Link2,
+        gradient: 'from-orange-500 to-red-500',
+      },
+    ],
+    [t]
+  );
 
-  const leaderboard = [
-    { name: 'CyberHero', score: 9850, avatar: '🦸' },
-    { name: 'SecureMaster', score: 9420, avatar: '🛡️' },
-    { name: 'HackerHunter', score: 9100, avatar: '🎯' },
-    { name: 'DataGuard', score: 8750, avatar: '🔐' },
-    { name: 'NetDefender', score: 8320, avatar: '🌐' },
-  ];
+  const leaderboard: LeaderboardEntry[] = useMemo(
+    () => [
+      { name: 'CyberHero', score: 9850, avatar: '🦸' },
+      { name: 'SecureMaster', score: 9420, avatar: '🛡️' },
+      { name: 'HackerHunter', score: 9100, avatar: '🎯' },
+      { name: 'DataGuard', score: 8750, avatar: '🔐' },
+      { name: 'NetDefender', score: 8320, avatar: '🌐' },
+    ],
+    []
+  );
+
+  const getDifficultyLabel = (difficulty: string): string => {
+    switch (difficulty) {
+      case 'easy':
+        return 'Oson';
+      case 'medium':
+        return 'O\'rta';
+      case 'hard':
+        return 'Qiyin';
+      default:
+        return difficulty;
+    }
+  };
 
   return (
     <>
@@ -62,7 +97,7 @@ const Games = () => {
             {/* Header */}
             <div className="max-w-3xl mx-auto text-center mb-16">
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6">
-                <Gamepad2 className="w-10 h-10 text-primary-foreground" />
+                <Gamepad2 className="w-10 h-10 text-primary-foreground" aria-hidden="true" />
               </div>
               <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
                 {t.games.title}
@@ -75,83 +110,96 @@ const Games = () => {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Games Grid */}
               <div className="lg:col-span-2 space-y-6">
-                {games.map((game, index) => (
-                  <div
-                    key={index}
-                    className="p-6 rounded-2xl glass-card group hover:scale-[1.02] transition-all duration-300"
-                  >
-                    <div className="flex items-start gap-6">
-                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${game.gradient} flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>
-                        <game.icon className="w-10 h-10 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-display text-xl font-bold text-foreground">
-                            {game.title}
-                          </h3>
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                            {game.difficulty}
-                          </span>
+                {games.map((game) => {
+                  const IconComponent = game.icon;
+                  return (
+                    <article
+                      key={game.id}
+                      className="p-6 rounded-2xl glass-card group hover:scale-[1.02] transition-all duration-300"
+                    >
+                      <div className="flex items-start gap-6">
+                        <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${game.gradient} flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>
+                          <IconComponent className="w-10 h-10 text-white" aria-hidden="true" />
                         </div>
-                        <p className="text-muted-foreground mb-4">
-                          {game.description}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Users className="w-4 h-4" />
-                              {game.players.toLocaleString()}
-                            </div>
-                            <div className="flex items-center gap-1 text-sm">
-                              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                              {game.rating}
-                            </div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-display text-xl font-bold text-foreground">
+                              {game.title}
+                            </h3>
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                              {getDifficultyLabel(game.difficulty)}
+                            </span>
                           </div>
-                          <Button variant="cyber">
-                            O'ynash
-                          </Button>
+                          <p className="text-muted-foreground mb-4">
+                            {game.description}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <Users className="w-4 h-4" aria-hidden="true" />
+                                {formatNumber(game.players)}
+                              </div>
+                              <div className="flex items-center gap-1 text-sm">
+                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" aria-hidden="true" />
+                                {game.rating}
+                              </div>
+                            </div>
+                            <Button variant="cyber">
+                              O'ynash
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
 
               {/* Leaderboard */}
-              <div className="lg:col-span-1">
+              <aside className="lg:col-span-1">
                 <div className="p-6 rounded-2xl glass-card sticky top-24">
                   <div className="flex items-center gap-3 mb-6">
-                    <Trophy className="w-6 h-6 text-yellow-500" />
+                    <Trophy className="w-6 h-6 text-yellow-500" aria-hidden="true" />
                     <h3 className="font-display text-xl font-bold text-foreground">
                       Reyting
                     </h3>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-4" role="list" aria-label="Reyting jadvali">
                     {leaderboard.map((player, index) => (
                       <div
                         key={index}
                         className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-300 hover:bg-secondary/50 ${
                           index < 3 ? 'bg-primary/5' : ''
                         }`}
+                        role="listitem"
                       >
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                          index === 0 ? 'bg-yellow-500/20 text-yellow-500' :
-                          index === 1 ? 'bg-gray-400/20 text-gray-400' :
-                          index === 2 ? 'bg-orange-500/20 text-orange-500' :
-                          'bg-secondary text-muted-foreground'
-                        }`}>
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                            index === 0
+                              ? 'bg-yellow-500/20 text-yellow-500'
+                              : index === 1
+                              ? 'bg-gray-400/20 text-gray-400'
+                              : index === 2
+                              ? 'bg-orange-500/20 text-orange-500'
+                              : 'bg-secondary text-muted-foreground'
+                          }`}
+                        >
                           {index + 1}
                         </div>
-                        <div className="text-2xl">{player.avatar}</div>
+                        <div className="text-2xl" role="img" aria-label={player.name}>
+                          {player.avatar}
+                        </div>
                         <div className="flex-1">
                           <div className="font-medium text-foreground">{player.name}</div>
-                          <div className="text-sm text-muted-foreground">{player.score.toLocaleString()} ball</div>
+                          <div className="text-sm text-muted-foreground">
+                            {formatNumber(player.score)} ball
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-              </div>
+              </aside>
             </div>
           </div>
         </main>

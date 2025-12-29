@@ -1,29 +1,34 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Language } from '@/lib/i18n';
+import type { Language } from '@/types';
 
-const flags: Record<Language, { src: string; alt: string }> = {
+interface FlagConfig {
+  src: string;
+  alt: string;
+}
+
+const flags: Record<Language, FlagConfig> = {
   uz: {
     src: 'https://img.icons8.com/color/48/uzbekistan-circular.png',
-    alt: 'Uzbekistan',
+    alt: 'O\'zbek tili',
   },
   en: {
     src: 'https://img.icons8.com/color/48/great-britain-circular.png',
-    alt: 'United Kingdom',
+    alt: 'English',
   },
   ru: {
     src: 'https://img.icons8.com/color/48/russian-federation-circular.png',
-    alt: 'Russia',
+    alt: 'Русский',
   },
 };
 
-const LanguageSwitcher = () => {
+const LanguageSwitcher: React.FC = () => {
   const { language, setLanguage } = useLanguage();
 
-  const languages: Language[] = ['uz', 'en', 'ru'];
+  const languages: Language[] = useMemo(() => ['uz', 'en', 'ru'], []);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" role="group" aria-label="Tilni tanlash">
       {languages.map((lang) => (
         <button
           key={lang}
@@ -33,11 +38,14 @@ const LanguageSwitcher = () => {
               ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-110'
               : 'opacity-60 hover:opacity-100 hover:scale-105'
           }`}
+          aria-label={flags[lang].alt}
+          aria-pressed={language === lang}
         >
           <img
             src={flags[lang].src}
             alt={flags[lang].alt}
             className="w-full h-full object-cover"
+            loading="lazy"
           />
         </button>
       ))}
