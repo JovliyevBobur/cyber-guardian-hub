@@ -1,0 +1,4 @@
+# Redirects for Vercel
+# Ensure logo.png is accessible
+/logo.png /logo.png 200
+

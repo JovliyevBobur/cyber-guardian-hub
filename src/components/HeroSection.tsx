@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { Shield, Lock, Eye, ArrowRight } from 'lucide-react';
+import { Shield, Lock, Eye, ArrowRight, LogIn, UserPlus } from 'lucide-react';
 import { ANIMATION_DELAYS } from '@/constants';
 
 interface FeatureIcon {
@@ -138,11 +138,26 @@ const HeroSection: React.FC = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in"
             style={{ animationDelay: ANIMATION_DELAYS.hero.buttons }}
           >
-            <Button variant="cyber" size="xl" className="group" onClick={handleStartLearning}>
-              {t.hero.cta}
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            {/* O'rganishni boshlash - Gradient button */}
+            <Button 
+              variant="cyber" 
+              size="xl" 
+              className="group bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold hover:shadow-lg hover:shadow-primary/25 hover:scale-105 active:scale-95 transition-all duration-300" 
+              onClick={handleStartLearning}
+            >
+              <span className="text-foreground dark:text-primary-foreground font-semibold">
+                {t.hero.cta}
+              </span>
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1 text-foreground dark:text-primary-foreground" aria-hidden="true" />
             </Button>
-            <Button variant="cyberOutline" size="xl" onClick={handleRegister}>
+            
+            {/* Ro'yxatdan o'tish - Outline button */}
+            <Button 
+              variant="cyberOutline" 
+              size="xl" 
+              className="border-2 border-primary bg-transparent text-primary hover:bg-primary/10 hover:shadow-lg hover:shadow-primary/25 font-semibold transition-all duration-300"
+              onClick={handleRegister}
+            >
               {t.hero.ctaSecondary}
             </Button>
           </div>

@@ -139,11 +139,24 @@ const Navbar: React.FC = () => {
               </DropdownMenu>
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="gap-2" onClick={() => navigate('/auth')}>
+                {/* Kirish button - Dark grey with white text */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="gap-2 bg-secondary/80 hover:bg-secondary text-foreground dark:bg-secondary/50 dark:hover:bg-secondary/70" 
+                  onClick={() => navigate('/auth')}
+                >
                   <LogIn className="w-4 h-4" aria-hidden="true" />
                   {t.nav.login}
                 </Button>
-                <Button variant="cyber" size="sm" className="gap-2" onClick={() => navigate('/auth?mode=register')}>
+                
+                {/* Ro'yxatdan o'tish button - Gradient */}
+                <Button 
+                  variant="cyber" 
+                  size="sm" 
+                  className="gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold hover:shadow-lg hover:shadow-primary/25 hover:scale-105 active:scale-95 transition-all duration-300" 
+                  onClick={() => navigate('/auth?mode=register')}
+                >
                   <UserPlus className="w-4 h-4" aria-hidden="true" />
                   {t.nav.register}
                 </Button>
@@ -208,11 +221,22 @@ const Navbar: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                <Button variant="ghost" className="justify-start gap-2" onClick={() => { handleNavClick(); navigate('/auth'); }}>
+                {/* Kirish - Mobile */}
+                <Button 
+                  variant="ghost" 
+                  className="justify-start gap-2 bg-secondary/80 hover:bg-secondary text-foreground" 
+                  onClick={() => { handleNavClick(); navigate('/auth'); }}
+                >
                   <LogIn className="w-4 h-4" aria-hidden="true" />
                   {t.nav.login}
                 </Button>
-                <Button variant="cyber" className="justify-start gap-2" onClick={() => { handleNavClick(); navigate('/auth?mode=register'); }}>
+                
+                {/* Ro'yxatdan o'tish - Mobile */}
+                <Button 
+                  variant="cyber" 
+                  className="justify-start gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold" 
+                  onClick={() => { handleNavClick(); navigate('/auth?mode=register'); }}
+                >
                   <UserPlus className="w-4 h-4" aria-hidden="true" />
                   {t.nav.register}
                 </Button>
