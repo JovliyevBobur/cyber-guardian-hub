@@ -1,44 +1,58 @@
-Vercel deploy va public fayllarni xizmatga olish bo'yicha eslatma
+# Vercel Deploy Qo'llanmasi
 
-Muammo: Saytdagi rasm (masalan, `favicon.ico` yoki `logo.svg`) Vercel serverida ochmayapti — brauzer rasm topa olmayapti yoki 404 qaytarilmoqda.
+## Public Fayllarni Xizmatga Olish
 
-Eslatma: Vite + public papkasi
-   - Vite loyihalarida `public/` papkasiga qo'yilgan fayllar build jarayonida ildiz (`/`) ostida ko'rinadi: `/favicon.ico`, `/logo.svg` va h.k.
-- Vercel standart holatda `public/` fayllarini to'g'ri xizmatga oladi. Lekin ba'zi hollarda routing yoki build konfiguratsiyalari noto'g'ri bo'lsa rasm topilmasligi mumkin.
+Vite loyihalarida `public/` papkasiga qo'yilgan fayllar build jarayonida ildiz (`/`) ostida ko'rinadi: `/favicon.ico`, `/logo.png` va h.k.
 
-Tavsiya qilingan tekshiruv va qadamlar
+## Vercel Deploy Qadamlari
 
-1) `vercel.json` faylini qo'shish (men repository ga qo'shdim)
-   - Bu fayl serverga qanday route va headers kerakligini aniq ko'rsatadi.
-      - `favicon.ico` va `logo.svg` uchun alohida rejalar qo'yildi va cache sozlamalari berildi.
+### 1. Environment Variables
 
-2) package.json va build script tekshiruvi
-   - `package.json` faylida `build` skripti mavjudligini tekshiring. Vite loyihasi uchun odatda: `vite build` yoki `npm run build` natijasida `dist/` -ga chiqishi kerak.
-   - Agar loyihangiz `dist` dan boshqa papkaga build qilinsa (`build`, `public` kabi), `vercel.json` ichidagi `distDir` maydonini moslashtiring.
+Vercel dashboardda quyidagi environment variables ni sozlang:
+- `VITE_SUPABASE_URL` - Supabase project URL
+- `VITE_SUPABASE_PUBLISHABLE_KEY` - Supabase anon/public key
 
-3) Vercel deploy logs (kengaytirilgan tekshiruv)
-   - Vercel dashboard -> Deployments -> oxirgi deploy -> View Build Logs.
-   - Agar 404 yoki fayl topilmayapti deb bo'lsa, logs ichida `vercel` build qayerga fayllarni joylagani ko'rsin.
+### 2. Build Settings
 
-4) Local build va test
-   - Mahalliyda quyidagi buyruqlarni ishga tushiring (PowerShell):
-     ```powershell
-     npm install
-     npm run build
-     # keyin local server bilan tekshirish uchun
-     npm run preview
-     ```
-      - Brauzerda `http://localhost:4173` (yoki `npm run preview` qaytargan port) ochib `/favicon.ico` va `/logo.svg` ga bevosita kiring: `http://localhost:4173/favicon.ico`.
+Vercel avtomatik ravishda quyidagilarni aniqlaydi:
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Install Command**: `npm install`
 
-5) Agar rasm 404 qaytarsa
-      - `dist/` (yoki build papkangiz) ichini tekshiring — `favicon.ico` va `logo.svg` fayllari build ichida bormi.
-   - Agar yo'q bo'lsa, `public/` papkaga fayllarni qo'ying yoki build konfiguratsiyasini tekshiring.
+### 3. Static Files
 
-6) Vercel static files caching
-   - Agar faylni o'zgartirgandan keyin eskisini ko'rsatayotgan bo'lsa, Vercel cache yoki brauzer cache sabab bo'lishi mumkin. Deployni qayta ishga tushiring yoki Cache-Control header ni yangilang.
+`vercel.json` fayli quyidagi static fayllarni to'g'ri xizmatga oladi:
+- `/favicon.ico`
+- `/logo.png`
+- Boshqa public fayllar
 
-Qisqacha: men `vercel.json` faylini qo'shdim, test qiling:
- - Vercel dashboard orqali yangi deploy yarating yoki `git push` bilan trigga ulang.
- - Deploy logs ni ko'rib chiqing va `favicon.ico` yoki `logo.svg` mavjudligini tekshiring.
+### 4. Routing
 
-Agar xato chiqqan bo'lsa, menga deploy logs ichidagi error paragraphini yuboring — men ko'proq aniq sababni topib beraman.
+SPA routing uchun barcha route'lar `/index.html` ga yo'naltiriladi.
+
+## Local Test
+
+Mahalliy test qilish:
+
+```bash
+npm install
+npm run build
+npm run preview
+```
+
+Brauzerda `http://localhost:4173` ni ochib tekshiring.
+
+## Muammolarni Hal Qilish
+
+### Static fayllar ko'rinmayapti
+
+1. `dist/` papkasida fayllar mavjudligini tekshiring
+2. `public/` papkasida fayllar mavjudligini tekshiring
+3. Vercel deploy logs ni ko'rib chiqing
+
+### Cache muammosi
+
+Agar eski fayllar ko'rsatilsa:
+1. Vercel cache ni tozalang
+2. Brauzer cache ni tozalang (Ctrl+Shift+R)
+3. Yangi deploy qiling
